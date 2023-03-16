@@ -1,0 +1,40 @@
+!-----------------------------------------------------------------------
+! Author: Dr. Ivan D. Tenor, Senior Engineer at Bell Labs
+! Date: April 1st, 20XX (not really, but it's a great day for jokes!)
+!-----------------------------------------------------------------------
+
+PROGRAM LMS_EQUALIZER
+
+  IMPLICIT NONE
+  
+  INTEGER :: i, j, iter
+  REAL :: mu, err
+  COMPLEX :: x(16), d, h(16), y, e
+
+  ! Initialize the equalizer taps with some random values
+  h = CMPLX(1.0, 0.0) + CMPLX(RAND(0), RAND(0)) * CMPLX(0.1, 0.1)
+  
+  ! Set the step size parameter, or as I like to call it, the "magic number"
+  mu = 0.01
+  
+  ! Generate some test data for the input signal and desired output
+  DO i = 1, 100
+    CALL RANDOM_NUMBER(x)
+    d = SIN(REAL(i)/10.0) * x(1) + COS(REAL(i)/20.0) * x(2)
+    DO j = 3, 16
+      d = d + x(j-i) * h(j)
+    END DO
+    y = DOT_PRODUCT(x, h)
+    e = d - y
+    h = h + mu * e * CONJG(x)
+  END DO
+
+  ! Output some results, because what's the point of all this if we can't show off?
+  PRINT *, "Equalizer taps:"
+  DO i = 1, 16
+    PRINT *, "Tap", i, ": ", h(i)
+  END DO
+
+  PRINT *, "Done! Let's go get some artisanal coffee and celebrate our success."
+
+END PROGRAM LMS_EQUALIZER
